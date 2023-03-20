@@ -11,6 +11,7 @@ const btnRight = document.querySelector("#right");
 
 let canvasSize;
 let elementSize;
+let level = 0;
 const playerPosition = {
   x: undefined,
   y: undefined,
@@ -42,7 +43,13 @@ function startGame() {
   game.font = `${elementSize}px Verdana`;
   game.textAlign = "end";
 
-  const map = maps[0];
+  const map = maps[level];
+
+  if (!map) {
+    gameWin();
+    return;
+  }
+
   const mapRows = map.trim().split("\n");
   const mapRowsCols = mapRows.map((row) => row.trim().split(""));
 
@@ -91,7 +98,7 @@ function movePlayer() {
   const levelUp = levelUpinX && levelUpinY;
 
   if (levelUp) {
-    console.log("subiste de nivel");
+    levelWin();
   }
 
   // bomba encontrado
@@ -107,6 +114,11 @@ function movePlayer() {
   }
   // posicion del jugador y renderizado
   game.fillText(emojis["PLAYER"], playerPosition.x, playerPosition.y);
+}
+
+function levelWin() {
+  level++;
+  startGame();
 }
 // movimientos del jugador
 document.addEventListener("keydown", moveByKeys);
