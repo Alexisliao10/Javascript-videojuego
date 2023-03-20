@@ -20,6 +20,8 @@ const giftPosition = {
   y: undefined,
 };
 
+let bombPosition = [];
+
 function setCanvasSize() {
   if (window.innerHeight > window.innerWidth) {
     canvasSize = window.innerWidth * 0.8;
@@ -44,6 +46,7 @@ function startGame() {
   const mapRows = map.trim().split("\n");
   const mapRowsCols = mapRows.map((row) => row.trim().split(""));
 
+  bombPosition = [];
   game.clearRect(0, 0, canvasSize, canvasSize);
 
   mapRowsCols.forEach((row, rowI) => {
@@ -69,8 +72,12 @@ function startGame() {
       } else if (col === "I") {
         giftPosition.x = posX;
         giftPosition.y = posY;
+      } else if (col === "X") {
+        bombPosition.push({
+          x: posX,
+          y: posY,
+        });
       }
-
       game.fillText(emoji, posX, posY);
     });
   });
@@ -78,6 +85,7 @@ function startGame() {
 }
 
 function movePlayer() {
+  // subir de nivel
   const levelUpinX = playerPosition.x.toFixed(2) === giftPosition.x.toFixed(2);
   const levelUpinY = playerPosition.y.toFixed(2) === giftPosition.y.toFixed(2);
   const levelUp = levelUpinX && levelUpinY;
@@ -86,6 +94,17 @@ function movePlayer() {
     console.log("subiste de nivel");
   }
 
+  // bomba encontrado
+
+  const bombCollision = bombPosition.find((enemy) => {
+    const bombInX = enemy.x.toFixed(2) === playerPosition.x.toFixed(2);
+    const bombInY = enemy.y.toFixed(2) === playerPosition.y.toFixed(2);
+    return bombInX && bombInY;
+  });
+
+  if (bombCollision) {
+    console.log("Chocastes");
+  }
   // posicion del jugador y renderizado
   game.fillText(emojis["PLAYER"], playerPosition.x, playerPosition.y);
 }
