@@ -12,6 +12,8 @@ const btnRight = document.querySelector("#right");
 let canvasSize;
 let elementSize;
 let level = 0;
+let lives = 3;
+
 const playerPosition = {
   x: undefined,
   y: undefined,
@@ -98,6 +100,7 @@ function movePlayer() {
   const levelUp = levelUpinX && levelUpinY;
 
   if (levelUp) {
+    // subir de nivel
     levelWin();
   }
 
@@ -110,7 +113,8 @@ function movePlayer() {
   });
 
   if (bombCollision) {
-    console.log("Chocastes");
+    // perder vida al chocar con una bomba
+    levelFail();
   }
   // posicion del jugador y renderizado
   game.fillText(emojis["PLAYER"], playerPosition.x, playerPosition.y);
@@ -120,6 +124,21 @@ function levelWin() {
   level++;
   startGame();
 }
+
+function levelFail() {
+  lives--;
+  if (lives === 0) {
+    level = 0;
+    lives = 3;
+  }
+  playerPosition.x = undefined;
+  playerPosition.y = undefined;
+  startGame();
+}
+
+function gameWin() {
+  console.log("ganaste el juego");
+}
 // movimientos del jugador
 document.addEventListener("keydown", moveByKeys);
 btnUP.addEventListener("click", moveUp);
@@ -128,10 +147,12 @@ btnLeft.addEventListener("click", moveLeft);
 btnRight.addEventListener("click", moveRight);
 
 function moveByKeys(event) {
-  if (event.key === "w") moveUp();
-  else if (event.key === "s") moveDown();
-  else if (event.key === "a") moveLeft();
-  else if (event.key === "d") moveRight();
+  if (event.key === "w" || event.key === "ArrowUp") moveUp();
+  else if (event.key === "s" || event.key === "ArrowDown") moveDown();
+  else if (event.key === "a" || event.key === "ArrowLeft") moveLeft();
+  else if (event.key === "d" || event.key === "ArrowRight") moveRight();
+
+  event.preventDefault();
 }
 
 function moveUp() {
