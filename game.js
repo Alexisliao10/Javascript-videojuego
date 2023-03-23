@@ -8,11 +8,18 @@ const btnUP = document.querySelector("#up");
 const btnDown = document.querySelector("#down");
 const btnLeft = document.querySelector("#left");
 const btnRight = document.querySelector("#right");
+const spanLives = document.querySelector("#lives");
+const spanTime = document.querySelector("#time");
+const spanRecord = document.querySelector("#record");
+const pResult = document.querySelector("#result");
 
 let canvasSize;
 let elementSize;
 let level = 0;
 let lives = 3;
+
+let timeStart;
+let timeInterval;
 
 const playerPosition = {
   x: undefined,
@@ -52,8 +59,16 @@ function startGame() {
     return;
   }
 
+  if (!timeStart) {
+    timeStart = Date.now();
+    timeInterval = setInterval(showTime, 100);
+    showRecord();
+  }
+
   const mapRows = map.trim().split("\n");
   const mapRowsCols = mapRows.map((row) => row.trim().split(""));
+
+  showLives();
 
   bombPosition = [];
   game.clearRect(0, 0, canvasSize, canvasSize);
@@ -127,9 +142,11 @@ function levelWin() {
 
 function levelFail() {
   lives--;
+
   if (lives === 0) {
     level = 0;
     lives = 3;
+    timeStart = 0;
   }
   playerPosition.x = undefined;
   playerPosition.y = undefined;
@@ -138,7 +155,36 @@ function levelFail() {
 
 function gameWin() {
   console.log("ganaste el juego");
+
+  const recordTime = localStorage.getItem("record_time");
+  const playerTime = Date.now() - timeStart;
+  if (recordTime) {
+    if (recordTime >= playerTime) {
+      localStorage.setItem("record_time", playerTime);
+      pResult.innerHTML = "SUPERASTE EL RECORD!";
+    } else {
+      pResult.innerHTML = "No superaste el record";
+    }
+  } else {
+    localStorage.setItem("record_time", playerTime);
+  }
+  clearInterval(timeInterval);
 }
+
+function showLives() {
+  const heartArray = Array(lives).fill(emojis["HEART"]);
+  const heartString = heartArray.join(""); // Unir los elementos sin separadores
+  spanLives.innerHTML = heartString;
+}
+
+function showTime() {
+  spanTime.innerHTML = Date.now() - timeStart;
+}
+
+function showRecord() {
+  spanRecord.innerHTML = localStorage.getItem("record_time");
+}
+
 // movimientos del jugador
 document.addEventListener("keydown", moveByKeys);
 btnUP.addEventListener("click", moveUp);
