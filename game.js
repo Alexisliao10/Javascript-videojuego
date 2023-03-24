@@ -34,9 +34,9 @@ let bombPosition = [];
 
 function setCanvasSize() {
   if (window.innerHeight > window.innerWidth) {
-    canvasSize = window.innerWidth * 0.8;
+    canvasSize = window.innerWidth * 0.7;
   } else {
-    canvasSize = window.innerHeight * 0.8;
+    canvasSize = window.innerHeight * 0.7;
   }
   canvas.setAttribute("height", canvasSize);
   canvas.setAttribute("width", canvasSize);
@@ -142,15 +142,32 @@ function levelWin() {
 
 function levelFail() {
   lives--;
-
   if (lives === 0) {
-    level = 0;
-    lives = 3;
-    timeStart = 0;
+    gameOver();
+    return;
   }
   playerPosition.x = undefined;
   playerPosition.y = undefined;
   startGame();
+}
+
+function gameOver() {
+  playerPosition.x = undefined;
+  playerPosition.y = undefined;
+  const canvasMiddle = canvasSize / 2;
+  game.font = `${elementSize}px Verdana`;
+  game.textAlign = "center";
+  const gameOver = game.fillText(
+    emojis["GAME_OVER"],
+    canvasMiddle,
+    canvasMiddle + elementSize
+  );
+
+  level = 0;
+  lives = 3;
+  timeStart = 0;
+  setTimeout(gameOver, 2000);
+  setTimeout(startGame, 2000);
 }
 
 function gameWin() {
@@ -169,6 +186,8 @@ function gameWin() {
     localStorage.setItem("record_time", playerTime);
   }
   clearInterval(timeInterval);
+
+  location.reload();
 }
 
 function showLives() {
